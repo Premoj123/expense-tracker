@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "expense_id": 1,
+    "amount": 120,
+    "extra_note": "Bus",
+    "date_time": "2025-12-21 14:35:10"
+  }
+]
