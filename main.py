@@ -59,7 +59,44 @@ def handle_choice(choice,expenses):
 
 #ADD THE EXPENSES
 def add_expense(expenses):
-    pass
+    print("\n--- Add Expense ---")
+    description = input("Description: ").strip()
+    if not description:
+        print("Description cannot be empty.")
+        return
+ 
+    try:
+        amount = float(input("Amount (Rs.): "))
+        if amount <= 0:
+            print("Amount must be greater than zero.")
+            return
+    except ValueError:
+        print("Invalid amount. Please enter a number.")
+        return
+ 
+    categories = ["Food", "Transport", "Entertainment", "Shopping", "Bills", "Health", "Other"]
+    print("Categories:")
+    for i, cat in enumerate(categories, 1):
+        print(f"  {i}. {cat}")
+    cat_choice = input("Choose category (1-7): ").strip()
+ 
+    try:
+        category = categories[int(cat_choice) - 1]
+    except (ValueError, IndexError):
+        category = "Other"
+ 
+    expense = {
+        "id": len(expenses) + 1,
+        "description": description,
+        "amount": round(amount, 2),
+        "category": category,
+        "date": datetime.date.today().strftime("%Y-%m-%d")
+    }
+ 
+    expenses.append(expense)
+    save_expenses(expenses)
+    print(f"Expense '{description}' of Rs.{amount:.2f} added successfully.")
+ 
 
 
 #VIEw THE EXPENSES
