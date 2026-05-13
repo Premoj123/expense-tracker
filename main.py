@@ -50,7 +50,7 @@ def handle_choice(choice,expenses):
     elif choice == "6":
         save_expenses(expenses)
         print("Exiting Program....")
-        return
+        exit()
     
 
     else:
@@ -64,27 +64,27 @@ def add_expense(expenses):
     if not description:
         print("Description cannot be empty.")
         return
- 
+
     try:
-        amount = float(input("Amount (Rs.): "))
+        amount = float(input("Amount: "))
         if amount <= 0:
             print("Amount must be greater than zero.")
             return
     except ValueError:
-        print("Invalid amount. Please enter a number.")
+        print("Invalid amount.")
         return
- 
+
     categories = ["Food", "Transport", "Entertainment", "Shopping", "Bills", "Health", "Other"]
     print("Categories:")
     for i, cat in enumerate(categories, 1):
         print(f"  {i}. {cat}")
+    
     cat_choice = input("Choose category (1-7): ").strip()
- 
     try:
         category = categories[int(cat_choice) - 1]
     except (ValueError, IndexError):
         category = "Other"
- 
+
     expense = {
         "id": len(expenses) + 1,
         "description": description,
@@ -92,20 +92,19 @@ def add_expense(expenses):
         "category": category,
         "date": datetime.date.today().strftime("%Y-%m-%d")
     }
- 
+
     expenses.append(expense)
     save_expenses(expenses)
-    print(f"Expense '{description}' of Rs.{amount:.2f} added successfully.")
- 
+    print("Expense added successfully.")
 
 
-#VIEw THE EXPENSES
+#VIEW THE EXPENSES
 def view_expenses(expenses):
     print("\n--- All Expenses ---")
     if not expenses:
         print("No expenses recorded yet.")
         return
- 
+
     print(f"{'ID':<5} {'Date':<12} {'Category':<15} {'Description':<25} {'Amount':>10}")
     print("-" * 70)
     for exp in expenses:
@@ -113,7 +112,6 @@ def view_expenses(expenses):
     print("-" * 70)
     total = sum(e["amount"] for e in expenses)
     print(f"{'Total':<52} Rs.{total:>8.2f}")
- 
 
 
 #UPDATE THE EXPENSES
@@ -122,34 +120,34 @@ def update_expense(expenses):
     if not expenses:
         print("No expenses to update.")
         return
- 
+
     view_expenses(expenses)
- 
+
     try:
         exp_id = int(input("\nEnter ID to update: "))
     except ValueError:
         print("Invalid ID.")
         return
- 
+
     expense = next((e for e in expenses if e["id"] == exp_id), None)
     if not expense:
         print("Expense not found.")
         return
- 
+
     print(f"Editing: {expense['description']} | Rs.{expense['amount']} | {expense['category']}")
     print("Press Enter to keep current value.")
- 
+
     new_desc = input(f"Description [{expense['description']}]: ").strip()
     if new_desc:
         expense["description"] = new_desc
- 
+
     new_amount = input(f"Amount [{expense['amount']}]: ").strip()
     if new_amount:
         try:
             expense["amount"] = round(float(new_amount), 2)
         except ValueError:
             print("Invalid amount. Keeping old value.")
- 
+
     categories = ["Food", "Transport", "Entertainment", "Shopping", "Bills", "Health", "Other"]
     print("Categories: " + ", ".join(f"{i+1}.{c}" for i, c in enumerate(categories)))
     new_cat = input(f"Category [{expense['category']}]: ").strip()
@@ -158,10 +156,9 @@ def update_expense(expenses):
             expense["category"] = categories[int(new_cat) - 1]
         except (ValueError, IndexError):
             print("Invalid choice. Keeping old category.")
- 
+
     save_expenses(expenses)
     print("Expense updated successfully.")
- 
 
 
 #DELETE THE EXPENSES
@@ -170,20 +167,20 @@ def delete_expense(expenses):
     if not expenses:
         print("No expenses to delete.")
         return
- 
+
     view_expenses(expenses)
- 
+
     try:
         exp_id = int(input("\nEnter ID to delete: "))
     except ValueError:
         print("Invalid ID.")
         return
- 
+
     expense = next((e for e in expenses if e["id"] == exp_id), None)
     if not expense:
         print("Expense not found.")
         return
- 
+
     confirm = input(f"Delete '{expense['description']}' (Rs.{expense['amount']})? (y/n): ")
     if confirm.lower() == "y":
         expenses.remove(expense)
@@ -201,13 +198,13 @@ def view_summary(expenses):
     if not expenses:
         print("No expenses recorded yet.")
         return
- 
+
     total = sum(e["amount"] for e in expenses)
- 
+
     category_totals = {}
     for e in expenses:
         category_totals[e["category"]] = category_totals.get(e["category"], 0) + e["amount"]
- 
+
     print(f"\n{'Category':<20} {'Total':>10} {'%':>8}")
     print("-" * 42)
     for cat, amt in sorted(category_totals.items(), key=lambda x: x[1], reverse=True):
@@ -215,23 +212,22 @@ def view_summary(expenses):
         print(f"{cat:<20} Rs.{amt:>7.2f} {percent:>7.1f}%")
     print("-" * 42)
     print(f"{'Total':<20} Rs.{total:>7.2f}")
- 
+
     monthly_totals = {}
     for e in expenses:
         month = e["date"][:7]
         monthly_totals[month] = monthly_totals.get(month, 0) + e["amount"]
- 
+
     if len(monthly_totals) > 1:
         print(f"\n{'Month':<15} {'Total':>10}")
         print("-" * 27)
         for month, amt in sorted(monthly_totals.items()):
             print(f"{month:<15} Rs.{amt:>7.2f}")
- 
+
     highest = max(expenses, key=lambda e: e["amount"])
     print(f"\nHighest Expense : {highest['description']} - Rs.{highest['amount']:.2f} ({highest['category']})")
     print(f"Total Entries   : {len(expenses)}")
     print(f"Average         : Rs.{total / len(expenses):.2f}")
- 
 
 
 def main():
